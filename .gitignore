@@ -1,0 +1,7 @@
+#Needs to be in UTF-8 encoding to work
+
+**/.venv/**
+**/.vscode/**
+**/bin/**
+**/obj/**
+**/*.exe
