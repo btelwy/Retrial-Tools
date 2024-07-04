@@ -2,15 +2,26 @@ import os
 import pathlib
 from pprint import pprint as pprint
 
-#search through a folder of binary files,
-#recursively searching any folders within,
-#to find the one(s) with a specific sequence of bytes
+#high level:
+#recursively search through ExtractedMaterials folder
+#to find matches for inputted sequence of bytes
 
-#the desired sequence of bytes to be searched for
-sequence = b'\xF8\x40\xF8\x81\x0B'
+def strToBytes(inputStr):
+    assert(len(inputStr) > 0 and len(inputStr) % 2 == 1, "Input not parsable as hex")
+
+    parsedHex = []
+    while (len(inputStr) > 0):
+        nextInt = int(inputStr[0 : 2], base=16)
+        parsedHex.append(nextInt)
+        inputStr = inputStr[2 : ]
+    
+    return bytes(parsedHex)
+
+rawInput = input("Enter sequence of hex bytes without prefixes or spaces:\n")
+hexSequence = strToBytes(rawInput)
 
 #choose the folder of binary files
-folder = "C:\\Users\\ben\\Desktop\\AJ-Retrial\\Extracted materials"
+folder = "C:\\Users\\ben\\Desktop\\AJ-Retrial\\ExtractedMaterials"
 
 #the list that will contain the matching files
 matches = []
@@ -23,8 +34,8 @@ for (root, dirs, files) in os.walk(folder):
 
         with open(absolutePath, 'rb') as f:
             #read the entire file into a string of bytes
-            string = f.read() 
-            offset = string.find(sequence) #byte offset of match in file, or -1 if none
+            fileBytes = f.read()
+            offset = fileBytes.find(hexSequence) #byte offset of match in file, or -1 if none
             
             #and check that string of bytes for the byte sequence
             if (offset != -1):
