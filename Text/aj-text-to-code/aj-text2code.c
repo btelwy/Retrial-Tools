@@ -725,8 +725,8 @@ void convertLine(char line[], int arrLength, FILE* pointer)
         else if (strcmp(shortCommand, "sound") == 0)
             sound(param, pointer);
 
-        else if (strcmp(shortCommand, "flash") == 0)
-            flash(param, pointer);
+        else if (strcmp(shortCommand, "screenFlash") == 0)
+            screenFlash(param, pointer);
         
         else if (strcmp(shortCommand, "shake") == 0)
             shake(param, pointer);
@@ -876,7 +876,7 @@ void spriteFade(char parameter[], FILE* pointer)
 }
 
 
-void flash(char parameter[], FILE* pointer)
+void screenFlash(char parameter[], FILE* pointer)
 {
     int writeBuffer = 0x0012;
     fwrite(&writeBuffer, 2, 1, pointer);
@@ -1207,7 +1207,7 @@ void flash(char parameter[], FILE* pointer)
             fwrite(&writeBuffer, 2, 1, pointer);
 
             //things that go along with the animation
-            flash("white", pointer);
+            screenFlash("white", pointer);
             sound("damage", pointer);
             shake("1", pointer);
 
@@ -2155,7 +2155,7 @@ void flash(char parameter[], FILE* pointer)
             fwrite(&writeBuffer, 4, 1, pointer);
 
             //unknown what the 63 command does
-            //but the screen stays white forever after the flash without it
+            //but the screen stays white forever after the screenFlash without it
             writeBuffer = 0x0063;
             fwrite(&writeBuffer, 2, 1, pointer);
 
@@ -2701,7 +2701,7 @@ void screenFade(char parameter[], FILE* pointer)
     //now change the background
     background(parameter, pointer);
 
-    //now write the rest of the flashes
+    //now write the rest of the screenFlashes
     writeBuffer = 0x0012;
     fwrite(&writeBuffer, 2, 1, pointer);
 
@@ -3352,7 +3352,7 @@ void sound(char parameter[], FILE* pointer)
         //when you cycle around perspectives in the courtroom, culminating in argument sound for final one
     }
 
-    else if (strcmp(parameter, "flashTransition") == 0)
+    else if (strcmp(parameter, "screenFlashTransition") == 0)
     {
         writeBuffer = 0x0031;
         fwrite(&writeBuffer, 2, 1, pointer);

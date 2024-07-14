@@ -3,32 +3,80 @@ import math
 
 #converts a .png into AJ's raw image format, found in cpac2d.bin/subarc-01
 #in this format, there is no palette in the file, and no header
-#this program assumes that the raw image format was converted to a .png for editing
-#and so the .png is already compatible with the format, not a random .png
+#this program assumes that the .png is already compatible with the format, not a random .png
 
 #if true, draws pixels in order of tiles; if false, draws linearly, left to right
 drawTilewise = False
 
-#put name of file to be converted in here
-fileName = "trucy1Reduced"
-source = Image.open(fileName + ".png")
+mode = input("Draw tilewise (t) or linearly (l)?\n")
+assert(mode == "t" or mode == "l")
+if (mode == "t"):
+    drawTilewise = True
+elif (mode == "l"):
+    pass
 
-#always use palette from subarc-00 at offset 0x1000 (in original subarc-00 file),
-#at least for 4bpp images
-#this is a 4bpp palette, so has 16 colors
-#first color is transparent, so the original last color, '2308', was removed
-#always set transparency to 1 when decoding the raw image files to .png
-subarc00Palette = ['0000', '1042', '9456', '586B', 'CE10', 'F214', '3519', '4504', 'CA10', '0E19', 'B521',\
-           'F825', '5A2E', '9D36', 'FE42', 'C15E']
+
+
+
+#put name of file to be converted in here
+fileName = input("Input filename in:\n")
+source = Image.open(fileName)
+
+fileOutName = input("Input filename out:\n")
+
+
+
+
+
+class paletteObj():
+    def __init__(self, palette, name):
+        self.palette = palette #tuple of strings attribute
+        self.name = name #string attribute
+
+
+
+
+#use palette from subarc-00 at offset 0x1000 in unedited subarc-00 file,
+#first color is used as transparent color, so doesn't matter what it is
+subarc00Palette = paletteObj(
+    ('0000', '1042', '9456', '586B', 'CE10', 'F214', '3519', '4504', 'CA10', '0E19', 'B521',\
+        'F825', '5A2E', '9D36', 'FE42', 'C15E'
+    ), "subarc00")
 
 #alternatively, for option buttons, this is the palette to use:
-optionPalette = ['E003', '1863', 'DE7B', 'FF7F', '9D73', '5C6B', '3B63', 'FA5A', 'B84E', '5742', '1532',\
-                 'B425', '9321', '3111', 'F008', 'AF00']
+optionPalette = paletteObj(
+    ('E003', '1863', 'DE7B', 'FF7F', '9D73', '5C6B', '3B63', 'FA5A', 'B84E', '5742', '1532',\
+        'B425', '9321', '3111', 'F008', 'AF00'
+    ), "option")
 
 #or, (removed E720 from the first element)
-trucyPalette = ['0000', 'A610', '2835', 'EF39', '0D56', 'AB49', '6F62', 'FF7B' '356B', 'D32D', '5736', 'EC14', 'FC4A', '9A3E', 'B220', 'DD24']
+trucyPalette = (
+    ('0000', 'A610', '2835', 'EF39', '0D56', 'AB49', '6F62', 'FF7B' '356B', 'D32D', '5736', 'EC14', 'FC4A', '9A3E', 'B220', 'DD24'
+    ), "Trucy")
 
-palette = trucyPalette
+presetPalettes = (subarc00Palette, optionPalette, trucyPalette)
+
+
+
+
+palette = None
+
+paletteTypeInput = input("Choose preset palette (p) or custom palette (c)?\n")
+assert(paletteTypeInput == "p" or paletteTypeInput == "c")
+
+if (paletteTypeInput == "p"): #use preset
+    print(f"The preset palettes are:\n{[preset.name + " | " for preset in presetPalettes]}\n")
+    selectedPresetName = input("Enter the name of the palette to use:\n")
+    for preset in presetPalettes:
+        if (selectedPresetName == preset.name):
+            palette = preset.palette
+
+elif (paletteTypeInput == "c"): #use custom
+    palette = input("Input custom palette:\n")
+    NotImplementedError
+
+
+
 
 paletteRGB = []
 
@@ -44,6 +92,9 @@ for color in palette:
 
     paletteRGB.append((red, green, blue))
 
+
+
+
 width, height = source.size #image dimensions
 startWidth, startHeight = 0, 0 #the coordinates to start iterating at for each tile
 tilesPerRow = width / 8
@@ -55,7 +106,7 @@ tempList = []
 
 buffer = []
 
-with open(fileName + "Converted.bin", "wb") as convertedImage: #create .bin file
+with open(fileOutName, "wb") as convertedImage: #create .bin file
     #if drawing tile by tile
     if drawTilewise:
         for tiles in range(0, round(width*height/64)):
@@ -140,4 +191,5 @@ with open(fileName + "Converted.bin", "wb") as convertedImage: #create .bin file
                     buffer = [] #empty buffer back to length 0
 
 
-    print("Finished.")
+
+print("Finished.")

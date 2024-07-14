@@ -30,14 +30,12 @@ def reduceColors(imageLoc, reducedImageLoc, target):
     
     return reducedNumColors
 
-#########################################################################################################
 
 def writeHeaderData(binFile):
     fileHeader = [0x0, 0x1, 0xC0, 0x0]
     fileHeaderBytes = bytes(fileHeader)
     binFile.write(fileHeaderBytes)
 
-#########################################################################################################
 
 def writePaletteData(binFile, imageLoc):
     #write 0x200 palette bytes, taking into account there may be less than 256 colors
@@ -128,8 +126,6 @@ def convertRGBToAJ(RGBTuple):
     return colorBytes
 
 
-#########################################################################################################
-
 def writePixelData(binFile, imageLoc, colorList):
     im = image.open(imageLoc)
     pixels = im.load()
@@ -175,7 +171,6 @@ def writePixelData(binFile, imageLoc, colorList):
     return 0
     
 
-#########################################################################################################
 
 imageLocation = "trucy_mason.png"
 reducedImageLocation = "reducedImage.png"
@@ -193,9 +188,8 @@ else:
     reducedImageLocation = imageLocation #so reducedImageLocation and reducedNumColors can be used regardless
     reducedNumColors = numColors
 
-#######################################################################################
 
-#random note: image needs to be 4:3 to be properly resized
+#note: image needs to be 4:3 to be properly resized
 #file should be 0xC204 bytes long
 #confirm the header is correct
 #header is followed by 0x200 palette bytes representing 0x100 different colors, at most
